@@ -1,6 +1,7 @@
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 df <- read.csv("activity.csv")
 df$date <- as.Date(df$date)
 df_ign <- subset(df, !is.na(df$steps))
@@ -10,7 +11,8 @@ df_ign <- subset(df, !is.na(df$steps))
 
 1. Make a histogram of the total number of steps taken each day
 
-```{r}
+
+```r
 dailysum <- tapply(df_ign$steps, df_ign$date, sum, na.rm=TRUE, simplify=T)
 dailysum <- dailysum[!is.na(dailysum)]
 
@@ -22,12 +24,26 @@ hist(x=dailysum,
      main="The distribution of daily total (missing data ignored)")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+
 2. Calculate and report the **mean** and **median** total number of
    steps taken per day
 
-```{r}
+
+```r
 mean(dailysum)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(dailysum)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily df pattern?
@@ -36,7 +52,8 @@ median(dailysum)
    interval (x-axis) and the average number of steps taken, averaged
    across all days (y-axis)
 
-```{r}
+
+```r
 int_avg <- tapply(df_ign$steps, df_ign$interval, mean, na.rm=TRUE, simplify=T)
 df_ia <- data.frame(interval=as.integer(names(int_avg)), avg=int_avg)
 
@@ -48,12 +65,20 @@ with(df_ia,
           ylab="average steps in the interval across all days"))
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+
 2. Which 5-minute interval, on average across all the days in the
    dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 max_steps <- max(df_ia$avg)
 df_ia[df_ia$avg == max_steps, ]
+```
+
+```
+##     interval      avg
+## 835      835 206.1698
 ```
 
 
@@ -62,8 +87,13 @@ df_ia[df_ia$avg == max_steps, ]
 1. Calculate and report the total number of missing values in the
    dataset (i.e. the total number of rows with `NA`s)
 
-```{r}
+
+```r
 sum(is.na(df$steps))
+```
+
+```
+## [1] 2304
 ```
 
 2. Devise a strategy for filling in all of the missing values in the
@@ -77,7 +107,8 @@ values.
 3. Create a new dataset that is equal to the original dataset but with
    the missing data filled in.
 
-```{r}
+
+```r
 df_impute <- df
 ndx <- is.na(df_impute$steps)
 int_avg <- tapply(df_ign$steps, df_ign$interval, mean, na.rm=TRUE, simplify=T)
@@ -90,7 +121,8 @@ df_impute$steps[ndx] <- int_avg[as.character(df_impute$interval[ndx])]
    the first part of the assignment? What is the impact of imputing
    missing data on the estimates of the total daily number of steps?
 
-```{r}
+
+```r
 new_dailysum <- tapply(df_impute$steps, df_impute$date, sum, na.rm=TRUE, simplify=T)
 
 hist(x=new_dailysum,
@@ -100,6 +132,8 @@ hist(x=new_dailysum,
      ylab="frequency",
      main="The distribution of daily total (with missing data imputed)")
 ```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
 
 The impact of the missing data seems rather low, at least when
 estimating the total number of steps per day.
@@ -118,7 +152,8 @@ estimating the total number of steps per day.
    taken, averaged across all weekday days or weekend days
    (y-axis).
 
-```{r}
+
+```r
 # helper function to decide if a day is a week day or not
 is_weekday <- function(d) {
     wd <- weekdays(d)
@@ -140,3 +175,5 @@ xyplot(steps ~ interval | factor(wk),
        lty=1,
        data=wk_df)
 ```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
